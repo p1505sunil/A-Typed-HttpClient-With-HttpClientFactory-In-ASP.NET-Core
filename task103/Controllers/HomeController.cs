@@ -1,39 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using MovieFinder.Models;
 
-namespace task103.Controllers
+namespace MovieFinder.Controllers
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class HomeController : ControllerBase
+    public class HomeController : Controller
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-         
-        private readonly ILogger<HomeController> _logger;
+        private readonly IMovieDetailsClient _movieDetailsClient;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IMovieDetailsClient movieDetailsClient)
         {
-            _logger = logger;
+            _movieDetailsClient = movieDetailsClient;
         }
 
-        [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public IActionResult Index()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Submit(MovieDetailModel model)
+        {
+            var movieDetail = await _movieDetailsClient.GetMovieDetailsAsync(model.Title);
+
+            return View("Index", movieDetail);
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
