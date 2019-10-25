@@ -1,0 +1,55 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model MovieDetailModel
+
+<form 
+    asp-controller="Home" 
+    asp-action="Submit"
+    method="post" 
+    class="form-horizontal" 
+    role="form">
+
+    <div class="form-group">
+        <label for="Title">Title</label>
+        <input 
+            class="form-control" 
+            placeholder="Enter Title"
+            asp-for="Title">   
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+
+@{
+    <br>
+    
+    if(!string.IsNullOrEmpty(Model?.Year))
+    {
+        var title = Model.Title;
+        var year = Model.Year;  
+        var message = $"{title} is release on {year}"; 
+ 
+        <br>
+        <div class="card" style="width: 18rem;">
+            <img class="card-img-top" src=@Model.PosterImage alt="Poster Not Available">
+            <div class="card-body">
+                <h5 class="card-title">@Model.Title (@Model.Year)</h5>
+                <p class="card-text">@Model.Plot</p>              
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Director : @Model.Director</strong></li>
+                <li class="list-group-item"><strong>Actors : @Model.Actors</strong></li>
+                <li class="list-group-item"><strong>Rating : @Model.IMDBRating</strong></li>
+            </ul>
+        </div>     
+    }
+    
+    if(Model != null && string.IsNullOrEmpty(Model?.Year))
+    {
+        <div class="alert alert-danger" role="alert">
+            <strong>Sorry!! Requested Movie Details are not available..</strong> 
+        </div>
+    }
+}
